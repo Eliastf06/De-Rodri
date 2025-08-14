@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recital Finder - Descubre Recitales Cerca de Ti</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de color */
+        :root {
+            --color-primary: #FF8C00; /* Naranja oscuro */
+            --color-secondary: #000000; /* Negro */
+            --color-background: #141414; /* Gris muy oscuro */
+            --color-text: #E0E0E0; /* Gris claro */
+            --color-card-bg: #222222; /* Gris oscuro para tarjetas */
+            --color-button-hover: #FF7F50; /* Naranja más claro */
+            --color-border: #333333;
+        }
+
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 1rem 0;
+            text-align: center;
+            border-bottom: 2px solid var(--color-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-section h2 {
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        #search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #city-input, #genre-select {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            background-color: var(--color-card-bg);
+            color: var(--color-text);
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        #city-input::placeholder {
+            color: #888;
+        }
+
+        #search-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #search-button:hover {
+            background-color: var(--color-button-hover);
+            transform: translateY(-2px);
+        }
+
+        .results-section {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #recital-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .recital-card {
+            background-color: var(--color-card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .recital-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .recital-card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content p {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content .info-label {
+            font-weight: 600;
+            color: #999;
+        }
+        
+        #no-results {
+            text-align: center;
+            color: #888;
+            font-size: 1.2rem;
+            padding: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background-color: var(--color-secondary);
+            border-top: 2px solid var(--color-primary);
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            #search-form {
+                flex-direction: column;
+                max-width: 400px;
+            }
+
+            #city-input, #genre-select, #search-button {
+                width: 100%;
+            }
+
+            #recital-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Recital Finder</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="search-section">
+                <h2>Encuentra Tu Próximo Recital</h2>
+                <form id="search-form">
+                    <input type="text" id="city-input" placeholder="Ingresa tu ciudad..." required>
+                    <select id="genre-select">
+                        <option value="">Todos los géneros</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Electrónica">Electrónica</option>
+                        <option value="Indie">Indie</option>
+                    </select>
+                    <button type="submit" id="search-button">Buscar Recitales</button>
+                </form>
+            </section>
+            
+            <section class="results-section">
+                <div id="recital-list"></div>
+                <div id="no-results" style="display: none;">No se encontraron recitales para tu búsqueda.</div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Recital Finder. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de ejemplo
+        const recitalsData = [
+            {
+                id: 1,
+                artist: 'The Black Keys',
+                city: 'Buenos Aires',
+                genre: 'Rock',
+                date: '2025-10-15',
+                venue: 'Luna Park',
+                image: 'https://images.unsplash.com/photo-1544716278-ca58a69d95f8?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 2,
+                artist: 'Dua Lipa',
+                city: 'Buenos Aires',
+                genre: 'Pop',
+                date: '2025-11-20',
+                venue: 'Estadio River Plate',
+                image: 'https://images.unsplash.com/photo-1517457375892-4638b8137350?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 3,
+                artist: 'Miles Davis Tribute',
+                city: 'Cordoba',
+                genre: 'Jazz',
+                date: '2025-09-05',
+                venue: 'Teatro del Libertador',
+                image: 'https://images.unsplash.com/photo-1459749411175-01e4832506a7?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 4,
+                artist: 'Arctic Monkeys',
+                city: 'Buenos Aires',
+                genre: 'Indie',
+                date: '2025-12-01',
+                venue: 'Movistar Arena',
+                image: 'https://images.unsplash.com/photo-1516248316281-c7c4b4a3c10e?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 5,
+                artist: 'David Guetta',
+                city: 'Rosario',
+                genre: 'Electrónica',
+                date: '2025-11-10',
+                venue: 'Metropolitano',
+                image: 'https://images.unsplash.com/photo-1514525253161-7a46d191d847?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 6,
+                artist: 'Foo Fighters',
+                city: 'Buenos Aires',
+                genre: 'Rock',
+                date: '2025-10-25',
+                venue: 'Estadio Vélez Sarsfield',
+                image: 'https://images.unsplash.com/photo-1549440624-9b244d5d9c24?q=80&w=2940&auto=format&fit=crop'
+            },
+            {
+                id: 7,
+                artist: 'Taylor Swift',
+                city: 'Cordoba',
+                genre: 'Pop',
+                date: '2025-12-15',
+                venue: 'Estadio Mario Alberto Kempes',
+                image: 'https://images.unsplash.com/photo-1518118029519-e93540c6c4c6?q=80&w=2940&auto=format&fit=crop'
+            }
+        ];
+
+        // Referencias a elementos del DOM
+        const form = document.getElementById('search-form');
+        const cityInput = document.getElementById('city-input');
+        const genreSelect = document.getElementById('genre-select');
+        const recitalList = document.getElementById('recital-list');
+        const noResultsMessage = document.getElementById('no-results');
+
+        // Función para renderizar los recitales en la página
+        function renderRecitals(recitals) {
+            recitalList.innerHTML = '';
+            if (recitals.length === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+                recitals.forEach(recital => {
+                    const recitalCard = document.createElement('div');
+                    recitalCard.classList.add('recital-card');
+                    recitalCard.innerHTML = `
+                        <div class="card-image-container">
+                            <img src="${recital.image}" alt="Imagen de ${recital.artist}" class="card-image">
+                        </div>
+                        <div class="card-content">
+                            <h3>${recital.artist}</h3>
+                            <p><span class="info-label">Género:</span> ${recital.genre}</p>
+                            <p><span class="info-label">Ciudad:</span> ${recital.city}</p>
+                            <p><span class="info-label">Fecha:</span> ${recital.date}</p>
+                            <p><span class="info-label">Lugar:</span> ${recital.venue}</p>
+                        </div>
+                    `;
+                    recitalList.appendChild(recitalCard);
+                });
+            }
+        }
+
+        // Función para manejar la búsqueda
+        function handleSearch(event) {
+            event.preventDefault();
+
+            const city = cityInput.value.trim().toLowerCase();
+            const genre = genreSelect.value.toLowerCase();
+
+            const filteredRecitals = recitalsData.filter(recital => {
+                const matchesCity = recital.city.toLowerCase().includes(city);
+                const matchesGenre = genre === '' || recital.genre.toLowerCase() === genre;
+                return matchesCity && matchesGenre;
+            });
+
+            renderRecitals(filteredRecitals);
+        }
+
+        // Event listener para el formulario de búsqueda
+        form.addEventListener('submit', handleSearch);
+
+        // Renderizar todos los recitales al cargar la página por primera vez
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecitals(recitalsData);
+        });
+    </script>
+
+</body>
+</html>
